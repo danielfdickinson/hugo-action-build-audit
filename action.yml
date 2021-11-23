@@ -83,7 +83,7 @@ runs:
       shell: bash
       run: |
         set -o pipefail; \
-        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" "${SOURCE_DIRECTORY:+$SOURCE_DIRECTORY/}"public/ | \
+        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" public/ | \
         grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]"; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
@@ -100,7 +100,7 @@ runs:
         INPUT_OUTPUT_DIRECTORY: ${{ inputs.upload-output-directory }}
         INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: tar ${SOURCE_DIRECTORY:+-C "$SOURCE_DIRECTORY"} -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
+      run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
     - name: "Upload site as an artifact"
       uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
