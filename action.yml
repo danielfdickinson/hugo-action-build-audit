@@ -4,10 +4,6 @@ inputs:
   do-minify:
     description: "If present, minify site using --minify during build"
     required: false
-  go-version:
-    description: "Go Version"
-    required: true
-    default: "1.17.3"
   hugo-env:
     description: "Hugo environment (production, development, etc)"
     required: true
@@ -15,6 +11,10 @@ inputs:
   source-directory:
     description: "Where the source for the site lives"
     required: false
+  hugo-extended:
+    description: "Hugo Extended"
+    required: true
+    default: "true"
   hugo-version:
     description: "Hugo Version"
     required: true
@@ -43,17 +43,11 @@ runs:
     - uses: actions/checkout@v2
       with:
         lfs: ${{ inputs.use-lfs }}
-    - uses: actions/setup-go@v2
-      with:
-        go-version: ^${{ inputs.go-version }}
-    - name: "Download Hugo"
-      shell: bash
-      env:
-        HUGO_VER: ${{ inputs.hugo-version }}
-      run: curl -sL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VER}/hugo_extended_${HUGO_VER}_Linux-64bit.tar.gz" -o hugo.tar.gz
     - name: "Install Hugo"
-      shell: bash
-      run: sudo tar -C /usr/local/bin -xzf hugo.tar.gz hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: ${{ inputs.hugo-version }}
+        extended: ${{ inputs.hugo-extended }}
     - name: "Build site so it is suitable for auditing"
       shell: bash
       env:
