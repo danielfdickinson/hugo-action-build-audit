@@ -88,8 +88,8 @@ runs:
       env:
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
       run: |
-        if [ '$(grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" "${OUTPUT_DIRECTORY}" | \
-        grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]")' ] != "" ]; then \
+        if [ "$(grep -iIvrnE 'grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)' "${OUTPUT_DIRECTORY}" | \
+        grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]")" ] != "" ]; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
       shell: bash
