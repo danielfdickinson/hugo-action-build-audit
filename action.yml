@@ -1,13 +1,17 @@
 name: "Hugo Build & Audit"
 description: "Checkout, build, and audit a Hugo site"
 inputs:
+  checkout-fetch-depth:
+    description: "Fetch depth: Use 0 to fetch all history if using .GitInfo or .Lastmod"
+    required: true
+    default: "0"
+  checkout-submodules:
+    description: "Fetch git submodules: false, true, or recursive"
+    required: true
+    default: "false"
   do-minify:
     description: "If present, minify site using --minify during build"
     required: false
-  go-version:
-    description: "Go Version"
-    required: true
-    default: "1.17.3"
   hugo-env:
     description: "Hugo environment (production, development, etc)"
     required: true
@@ -15,6 +19,10 @@ inputs:
   source-directory:
     description: "Where the source for the site lives"
     required: false
+  hugo-extended:
+    description: "Hugo Extended"
+    required: true
+    default: "true"
   hugo-version:
     description: "Hugo Version"
     required: true
@@ -43,17 +51,25 @@ runs:
     - uses: actions/checkout@v2
       with:
         lfs: ${{ inputs.use-lfs }}
-    - uses: actions/setup-go@v2
-      with:
-        go-version: ^${{ inputs.go-version }}
-    - name: "Download Hugo"
-      shell: bash
-      env:
-        HUGO_VER: ${{ inputs.hugo-version }}
-      run: curl -sL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VER}/hugo_extended_${HUGO_VER}_Linux-64bit.tar.gz" -o hugo.tar.gz
+        submodules: ${{ inputs.submodules }}
+        fetch-depth: ${{ inputs.checkout-fetch-depth }}
     - name: "Install Hugo"
-      shell: bash
-      run: sudo tar -C /usr/local/bin -xzf hugo.tar.gz hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: ${{ inputs.hugo-version }}
+        extended: ${{ inputs.hugo-extended }}
+    - name: "Hugo modules cache"
+      uses: actions/cache@v2
+      with:
+        path: /tmp/hugo_cache
+        key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-hugomod-
+    - name: "Hugo resources cache"
+      uses: actions/cache@v2
+      with:
+        path: resources
+        key: ${{ runner.os }}-hugoresources
     - name: "Build site so it is suitable for auditing"
       shell: bash
       env:
