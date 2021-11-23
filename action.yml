@@ -7,7 +7,7 @@ inputs:
   go-version:
     description: "Go Version"
     required: true
-    default: "^1.17.3"
+    default: "1.17.3"
   hugo-env:
     description: "Hugo environment (production, development, etc)"
     required: true
@@ -34,7 +34,7 @@ inputs:
     required: false
     default: "1"
   use-lfs:
-    description: "Use LFS when checkout out repo"
+    description: "Use LFS when checking out out repo"
     required: true
     default: "false"
 runs:
@@ -45,14 +45,17 @@ runs:
         lfs: ${{ inputs.use-lfs }}
     - uses: actions/setup-go@v2
       with:
-        go-version: ${{ inputs.go-version }}
-    - shell: bash
+        go-version: ^${{ inputs.go-version }}
+    - name: "Download Hugo"
+      shell: bash
       env:
         HUGO_VER: ${{ inputs.hugo-version }}
       run: curl -sL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VER}/hugo_extended_${HUGO_VER}_Linux-64bit.tar.gz" -o hugo.tar.gz
-    - shell: bash
+    - name: "Install Hugo"
+      shell: bash
       run: sudo tar -C /usr/local/bin -xzf hugo.tar.gz hugo
-    - shell: bash
+    - name: "Build site so it is suitable for auditing"
+      shell: bash
       env:
         HUGO_MINIFY_TDEWOLFF_HTML_KEEPCOMMENTS: "true"
         HUGO_ENABLEMISSINGTRANSLATIONPLACEHOLDERS: "true"
@@ -60,25 +63,30 @@ runs:
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
       run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
-    - shell: bash
+    - name: "Audit site for missed Hugo issues"
+      shell: bash
       run: |
         set -o pipefail; \
         if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" "${SOURCE_DIRECTORY:+$SOURCE_DIRECTORY/}"public/ | \
         grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]"; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
-    - shell: bash
+    - name: "Build site without audit markup"
+      shell: bash
       env:
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
       run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
-    - shell: bash
+    - name: "Bundle site for upload as artifact"
+      if: inputs.upload-site-as
+      shell: bash
       env:
         INPUT_OUTPUT_DIRECTORY: ${{ inputs.upload-output-directory }}
         INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
       run: tar ${SOURCE_DIRECTORY:+-C "$SOURCE_DIRECTORY"} -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
-    - uses: actions/upload-artifact@v2
+    - name: "Upload site as an artifact"
+      uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
       with:
         name: ${{ inputs.upload-site-as }}
