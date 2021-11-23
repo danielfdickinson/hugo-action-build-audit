@@ -1,6 +1,14 @@
 name: "Hugo Build & Audit"
 description: "Checkout, build, and audit a Hugo site"
 inputs:
+  checkout-fetch-depth:
+    description: "Fetch depth: Use 0 to fetch all history if using .GitInfo or .Lastmod"
+    required: true
+    default: "0"
+  checkout-submodules:
+    description: "Fetch git submodules: false, true, or recursive"
+    required: true
+    default: "false"
   do-minify:
     description: "If present, minify site using --minify during build"
     required: false
@@ -43,6 +51,8 @@ runs:
     - uses: actions/checkout@v2
       with:
         lfs: ${{ inputs.use-lfs }}
+        submodules: ${{ inputs.submodules }}
+        fetch-depth: ${{ inputs.checkout-fetch-depth }}
     - name: "Install Hugo"
       uses: peaceiris/actions-hugo@v2
       with:
