@@ -16,9 +16,6 @@ inputs:
     description: "Hugo environment (production, development, etc)"
     required: true
     default: "production"
-  source-directory:
-    description: "Where the source for the site lives"
-    required: false
   hugo-extended:
     description: "Hugo Extended"
     required: true
@@ -27,13 +24,16 @@ inputs:
     description: "Hugo Version"
     required: true
     default: "0.89.4"
+  output-directory:
+    description: "Location of output site"
+    required: true
+    default: "public"
+  source-directory:
+    description: "Where the source for the site lives"
+    required: false
   upload-html-validate-config:
     description: "If present, include config for html-validate in artifact (if present)"
     required: false
-  upload-output-directory:
-    description: "Output directory to upload (default 'public')"
-    required: true
-    default: "public"
   upload-site-as:
     description: "Artifact to create containing the Hugo site"
     required: false
@@ -77,13 +77,13 @@ runs:
         HUGO_ENABLEMISSINGTRANSLATIONPLACEHOLDERS: "true"
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
+        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --outputDir ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - name: "Audit site for missed Hugo issues"
       shell: bash
       run: |
-        set -o pipefail; \
-        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" public | \
+        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" ${OUTPUT_DIRECTORY} | \
         grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]"; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
@@ -91,13 +91,14 @@ runs:
       env:
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
+        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify} --outputDir ${OUTPUT_DIRECTORY} 
     - name: "Bundle site for upload as artifact"
       if: inputs.upload-site-as
       shell: bash
       env:
-        INPUT_OUTPUT_DIRECTORY: ${{ inputs.upload-output-directory }}
+        INPUT_OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
       run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
