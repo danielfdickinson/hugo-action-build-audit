@@ -79,7 +79,7 @@ runs:
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --outputDir ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - name: "Audit site for missed Hugo issues"
       shell: bash
       run: |
@@ -93,7 +93,7 @@ runs:
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify} --outputDir ${OUTPUT_DIRECTORY} 
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - name: "Bundle site for upload as artifact"
       if: inputs.upload-site-as
       shell: bash
