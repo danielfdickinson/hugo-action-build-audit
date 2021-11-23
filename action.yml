@@ -58,6 +58,18 @@ runs:
       with:
         hugo-version: ${{ inputs.hugo-version }}
         extended: ${{ inputs.hugo-extended }}
+    - name: "Hugo modules cache"
+      uses: actions/cache@v2
+      with:
+        path: /tmp/hugo_cache
+        key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-hugomod-
+    - name: "Hugo resources cache"
+      uses: actions/cache@v2
+      with:
+        path: resources
+        key: ${{ runner.os }}-hugoresources
     - name: "Build site so it is suitable for auditing"
       shell: bash
       env:
