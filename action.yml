@@ -59,25 +59,27 @@ runs:
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}; fi
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - shell: bash
       run: |
         set -o pipefail; \
-        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" public/ | \
+        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" "${SOURCE_DIRECTORY:+$SOURCE_DIRECTORY/}"public/ | \
         grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]"; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - shell: bash
       env:
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
-        INPUT_OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
-        INPUT_NO_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.no-upload-html-validate-config }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}; fi
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - shell: bash
-      run: tar -cf hugo-site.tar "${{ INPUT_OUTPUT_DIRECTORY }}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}; else tar -cf hugo-site.tar "${{ INPUT_OUTPUT_DIRECTORY }}"; fi
+      env:
+        INPUT_OUTPUT_DIRECTORY: ${{ inputs.upload-output-directory }}
+        INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
+        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
+      run: tar ${SOURCE_DIRECTORY:+-C "$SOURCE_DIRECTORY"} -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
     - uses: actions/upload-artifact@v2
-      if: ${{ input.upload-site-as }}
+      if: inputs.upload-site-as
       with:
         name: ${{ inputs.upload-site-as }}
         path: hugo-site.tar
