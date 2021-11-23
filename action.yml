@@ -76,36 +76,38 @@ runs:
     - name: "Build site so it is suitable for auditing"
       shell: bash
       env:
+        DO_MINIFY: ${{ inputs.do-minify }}
         HUGO_MINIFY_TDEWOLFF_HTML_KEEPCOMMENTS: "true"
         HUGO_ENABLEMISSINGTRANSLATIONPLACEHOLDERS: "true"
         HUGO_ENV: ${{ inputs.hugo-env }}
-        INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir $DO_MINIFY:+--minify}
     - name: "Audit site for missed Hugo issues"
       shell: bash
+      env:
+        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
       run: |
-        if grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" ${OUTPUT_DIRECTORY} | \
-        grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]"; then \
+        if [ '$(grep -iIvrnE "grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)" "${OUTPUT_DIRECTORY}" | \
+        grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]")' ] != "" ]; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
       shell: bash
       env:
+        DO_MINIFY: ${{ inputs.do-minify }}
         HUGO_ENV: ${{ inputs.hugo-env }}
-        INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d ${OUTPUT_DIRECTORY} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
     - name: "Bundle site for upload as artifact"
       if: inputs.upload-site-as
       shell: bash
       env:
-        INPUT_OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
-        INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
-        INPUT_UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
+        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${INPUT_UPLOAD_NPM_JSON:+package.json package-lock.json}
+        UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
+        UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
+      run: tar -cf hugo-site.tar "${OUTPUT_DIRECTORY}" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
     - name: "Upload site as an artifact"
       uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
