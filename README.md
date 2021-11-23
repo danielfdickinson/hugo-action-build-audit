@@ -5,11 +5,11 @@ GitHub action to checkout, build, and audit a Hugo site
 
 ### Main
 
-![test-build-audit](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit/badge.svg)
+![test-build-audit](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit.yml/badge.svg)
 
 ### Pull Request
 
-![test-build-audit PR](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit/badge.svg?event=pull_request)
+![test-build-audit PR](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit.yml/badge.svg?event=pull_request)
 
 ## Details
 
