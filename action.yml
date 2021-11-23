@@ -75,7 +75,7 @@ runs:
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
       run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - shell: bash
-      run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}; else tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}"; fi
+      run: tar ${SOURCE_DIRECTORY:+-C "$SOURCE_DIRECTORY"} -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}; else tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}"; fi
     - uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
       with:
