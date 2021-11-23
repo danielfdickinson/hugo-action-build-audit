@@ -34,6 +34,9 @@ inputs:
   upload-html-validate-config:
     description: "If present, include config for html-validate in artifact (if present)"
     required: false
+  upload-npm-json:
+    description: "If present, include package.json and package-lock.json in artifact"
+    required: false
   upload-site-as:
     description: "Artifact to create containing the Hugo site"
     required: false
@@ -100,8 +103,9 @@ runs:
       env:
         INPUT_OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         INPUT_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
+        INPUT_UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}
+      run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} {INPUT_UPLOAD_NPM_JSON:+package.json package-lock.json}
     - name: "Upload site as an artifact"
       uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
