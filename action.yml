@@ -59,7 +59,7 @@ runs:
         HUGO_ENV: ${{ inputs.hugo-env }}
         INPUT_DO_MINIFY: ${{ inputs.do-minify }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}; fi
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - shell: bash
       run: |
         set -o pipefail; \
@@ -73,7 +73,7 @@ runs:
         INPUT_OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         INPUT_NO_UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.no-upload-html-validate-config }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}; fi
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} --gc --cleanDestinationDir ${INPUT_DO_MINIFY:+--minify}
     - shell: bash
       run: tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}" ${INPUT_UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*}; else tar -cf hugo-site.tar "${INPUT_OUTPUT_DIRECTORY}"; fi
     - uses: actions/upload-artifact@v2
