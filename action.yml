@@ -88,6 +88,9 @@ runs:
       env:
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
       run: |
+        pwd ; \
+        ls -a ; \
+        set -o pipefail; \
         if [ "$(grep -iIvrnE 'grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)' "${OUTPUT_DIRECTORY}" | \
         grep -iIoE "<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]")" ] != "" ]; then \
         echo "not ok"; exit 1; else echo "ok"; exit 0; fi
