@@ -70,9 +70,11 @@ runs:
           ${{ runner.os }}-hugomod-
     - name: "Hugo resources cache"
       uses: actions/cache@v2
+      env:
+        assets-tree: ${{ inputs.source-directory }}/assets/**
       with:
         path: ${{ inputs.source-directory }}/resources
-        key: ${{ runner.os }}-hugoresources-${{ hashFiles('${{ inputs.source-directory }}/assets/**', '**/content/**.webp', '**/content/**.png', '**/content/**.jpg', '**/content/**.jpeg', '**/content/**.gif', '**/content/**.tiff, '**/content/**.tif', '**/content/**.bmp') }}
+        key: ${{ runner.os }}-hugoresources-${{ hashFiles(env.assets-tree, '**/content/**.webp', '**/content/**.png', '**/content/**.jpg', '**/content/**.jpeg', '**/content/**.gif', '**/content/**.tiff, '**/content/**.tif', '**/content/**.bmp') }}
         restore-keys: |
           ${{ runner.os }}-hugoresources-
           ${{ runner.os }}-hugoresources
