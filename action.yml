@@ -95,13 +95,13 @@ runs:
       env:
         HUGO_CACHEDIR: ${{ inputs.code-directory }}/${{ inputs.hugo-cache-directory }}
         SOURCE_DIRECTORY: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}
-        TEST_REPO_CONTENT:  ${{ join(fromJSON(inputs.image-formats), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.')) }}
-        TEST_RESOURCES_HASH_FILES: ${{ format('{0}, {1}, {2}', format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '**assets/**'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**assets/**'), env.images-repo-content) }}
+        TEST_REPO_CONTENT:  ${{ format('{0}{1}', format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.') join(fromJSON(inputs.image-formats), format(', {0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.')) }}
+        TEST_RESOURCES_HASH_FILES: ${{ format('{0}, {1}, {2}', format(', {0}/{1}/{2}'inputs.code-directory, inputs.hugo-cache-directory, '**assets/**'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**assets/**'), env.images-repo-content) }}
       run: hugo mod tidy --source ${SOURCE_DIRECTORY} && echo ${TEST_REPO_CONTENT} ':' ${TEST_RESOURCES_HASH_FILES}
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       env:
-        images-repo-content: ${{ join(fromJSON(inputs.image-formats), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.')) }}
+        images-repo-content: ${{ format('{0}{1}', format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.') join(fromJSON(inputs.image-formats), format(', {0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.')) }}
         resources-hash: ${{ hashFiles(format('{0}, {1}, {2}', format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '**assets/**'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**assets/**'), env.images-repo-content)) }}
       with:
         path: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}/resources
