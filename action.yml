@@ -99,6 +99,7 @@ runs:
         OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
       run: if test "$(grep -iIvrnE 'grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)' "${OUTPUT_DIRECTORY}" | grep -iIoE '<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]')" != ""; then echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
+      if: inputs.upload-site-as
       shell: bash
       env:
         DO_MINIFY: ${{ inputs.do-minify }}
@@ -115,7 +116,7 @@ runs:
         SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
         UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
-      run: tar -cf hugo-site.tar "${OUTPUT_DIRECTORY}" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
+      run: tar -C "$(dirname "${OUTPUT_DIRECTORY}")" -cf hugo-site.tar "$(basename "${OUTPUT_DIRECTORY}")" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
     - name: "Upload site as an artifact"
       uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
