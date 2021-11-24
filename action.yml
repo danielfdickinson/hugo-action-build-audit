@@ -3,7 +3,7 @@ author: "Daniel F. Dickinson"
 description: "Checkout, build, and audit a Hugo site"
 branding:
   color: blue
-  icon: check-circle
+  icon: thumbs-up
 inputs:
   checkout-fetch-depth:
     description: "Fetch depth: Use 0 to fetch all history if using .GitInfo or .Lastmod"
