@@ -64,20 +64,20 @@ runs:
     - name: "Hugo modules cache"
       uses: actions/cache@v2
       with:
-        path: hugo_cache
+        path: ${{ github.workspace }}/hugo_cache
         key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-hugomod-
     - name: "Pull Hugo modules before calculating resources"
       shell: bash
       env:
-        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
+        SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
         HUGO_CACHEDIR: ${{ github.workspace }}/hugo_cache
       run: hugo mod tidy --source ${SOURCE_DIRECTORY}
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       with:
-        path: ${{ inputs.source-directory }}/resources
+        path: ${{ github.workspace }}/{{ inputs.source-directory }}/resources
         key: ${{ runner.os }}-hugoresources-${{ hashFiles('**/assets/**', '**.webp', '**.png', '**.jpg', '**.jpeg', '**.gif', '**.tiff', '**.tif', '**.bmp') }}
         restore-keys: |
           ${{ runner.os }}-hugoresources-
@@ -90,13 +90,13 @@ runs:
         HUGO_ENABLEMISSINGTRANSLATIONPLACEHOLDERS: "true"
         HUGO_ENV: ${{ inputs.hugo-env }}
         HUGO_MINIFY_TDEWOLFF_HTML_KEEPCOMMENTS: "true"
-        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
-        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "$(pwd)/${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
+        OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
+        SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
     - name: "Audit site for missed Hugo issues"
       shell: bash
       env:
-        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
+        OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
       run: if test "$(grep -iIvrnE 'grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)' "${OUTPUT_DIRECTORY}" | grep -iIoE '<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]')" != ""; then echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
       shell: bash
@@ -104,15 +104,15 @@ runs:
         DO_MINIFY: ${{ inputs.do-minify }}
         HUGO_CACHEDIR: ${{ github.workspace }}/hugo_cache
         HUGO_ENV: ${{ inputs.hugo-env }}
-        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
-        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "$(pwd)/${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
+        OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
+        SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
     - name: "Bundle site for upload as artifact"
       if: inputs.upload-site-as
       shell: bash
       env:
-        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
-        SOURCE_DIRECTORY: ${{ inputs.source-directory }}
+        OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
+        SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
         UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
       run: tar -cf hugo-site.tar "${OUTPUT_DIRECTORY}" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
