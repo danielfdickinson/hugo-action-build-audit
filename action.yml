@@ -71,10 +71,9 @@ runs:
     - name: "Pull Hugo modules before calculating resources"
       shell: bash
       env:
-        OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
         HUGO_CACHEDIR: ${{ github.workspace }}/hugo_cache
-      run: hugo mod tidy
+      run: hugo mod tidy --source ${SOURCE_DIRECTORY}
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       with:
