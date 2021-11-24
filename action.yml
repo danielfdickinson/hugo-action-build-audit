@@ -99,7 +99,7 @@ runs:
     - name: "Create resources manifest"
       env:
         HUGO_CACHEDIR: ${{ inputs.code-directory }}/${{ inputs.hugo-cache-directory }}
-        IMAGE_PATHS: ${{ join(fromJSON(inputs.image-formats), ''' -o -name ''*.' }}
+        IMAGE_PATHS: ${{ join(fromJSON(inputs.image-formats), ''' -o -name ''*.') }}
         SOURCE_DIRECTORY: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}
       shell: bash
       run: echo "resources_hash=$(find "${HUGO_CACHEDIR}" "${SOURCE_DIRECTORY}" -path 'assets/**')$(find "${SOURCE_DIRECTORY}/content -name ''*.${IMAGE_PATHS}'' | sha256sum - | cut -f1 -d' ')" >> $GITHUB_ENV
