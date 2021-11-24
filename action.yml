@@ -101,7 +101,6 @@ runs:
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       env:
-        images-repo-content: ${{  }}
         resources-hash-files: ${{ toJSON(format('[{0}, {1}, {2}]', format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '**assets/**'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**assets/**'), format('{0}{1}', format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.'), join(fromJSON(inputs.image-formats), format(', {0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.'))))) }}
       with:
         path: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}/resources
