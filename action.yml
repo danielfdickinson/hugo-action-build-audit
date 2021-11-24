@@ -64,17 +64,15 @@ runs:
     - name: "Hugo modules cache"
       uses: actions/cache@v2
       with:
-        path: /tmp/hugo_cache
+        path: hugo_cache
         key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-hugomod-
     - name: "Hugo resources cache"
       uses: actions/cache@v2
-      env:
-        assets-tree: ${{ inputs.source-directory }}/assets/**
       with:
         path: ${{ inputs.source-directory }}/resources
-        key: ${{ runner.os }}-hugoresources-${{ hashFiles(env.assets-tree, '**/content/**.webp', '**/content/**.png', '**/content/**.jpg', '**/content/**.jpeg', '**/content/**.gif', '**/content/**.tiff', '**/content/**.tif', '**/content/**.bmp') }}
+        key: ${{ runner.os }}-hugoresources-${{ hashFiles('**/assets/**', '**.webp', '**.png', '**.jpg', '**.jpeg', '**.gif', '**.tiff', '**.tif', '**.bmp') }}
         restore-keys: |
           ${{ runner.os }}-hugoresources-
           ${{ runner.os }}-hugoresources
@@ -87,7 +85,7 @@ runs:
         HUGO_ENV: ${{ inputs.hugo-env }}
         OUTPUT_DIRECTORY: ${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.source-directory }}
-      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "$(pwd)/${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
+      run: hugo ${SOURCE_DIRECTORY:+-s "$SOURCE_DIRECTORY"} -d "$(pwd)/${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify} --cacheDir $(pwd)/hugo_cache
     - name: "Audit site for missed Hugo issues"
       shell: bash
       env:
