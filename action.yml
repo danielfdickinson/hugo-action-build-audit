@@ -116,7 +116,7 @@ runs:
         SOURCE_DIRECTORY: ${{ github.workspace }}/${{ inputs.source-directory }}
         UPLOAD_HTML_VALIDATE_CONFIG: ${{ inputs.upload-html-validate-config }}
         UPLOAD_NPM_JSON: ${{ inputs.upload-npm-json }}
-      run: tar -C "$(dirname ${OUTPUT_DIRECTORY}")" -cf hugo-site.tar "$(basename "${OUTPUT_DIRECTORY}")" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
+      run: tar -C "$(dirname "${OUTPUT_DIRECTORY}")" -cf hugo-site.tar "$(basename "${OUTPUT_DIRECTORY}")" ${UPLOAD_HTML_VALIDATE_CONFIG:+.htmlvalidate*} ${UPLOAD_NPM_JSON:+package.json package-lock.json}
     - name: "Upload site as an artifact"
       uses: actions/upload-artifact@v2
       if: inputs.upload-site-as
