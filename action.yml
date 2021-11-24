@@ -113,7 +113,7 @@ runs:
         HUGO_MINIFY_TDEWOLFF_HTML_KEEPCOMMENTS: "true"
         OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}
-      run: hugo "${SOURCE_DIRECTORY}" --destination "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
+      run: hugo --source "${SOURCE_DIRECTORY}" --destination "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
     - name: "Audit site for missed Hugo issues"
       shell: bash
       env:
@@ -128,7 +128,7 @@ runs:
         HUGO_ENV: ${{ inputs.hugo-env }}
         OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
         SOURCE_DIRECTORY: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}
-      run: hugo "${SOURCE_DIRECTORY}" --destination "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
+      run: hugo --source "${SOURCE_DIRECTORY}" --destination "${OUTPUT_DIRECTORY}" --gc --cleanDestinationDir ${DO_MINIFY:+--minify}
     - name: "Bundle site for upload as artifact"
       if: inputs.upload-site-as
       shell: bash
