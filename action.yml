@@ -80,7 +80,7 @@ runs:
     - name: "Hugo modules cache"
       uses: actions/cache@v2
       env:
-        modules-hash: ${{ hashFiles(${{ inputs.code-directory }}/**/go.sum) }}
+        modules-hash: ${{ hashFiles(inputs.code-directory'/**/go.sum') }}
       with:
         path: ${{ inputs.code-directory}}/${{ inputs.hugo-cache-directory }}
         key: ${{ runner.os }}-hugomod-${{ env.modules-hash }}
