@@ -99,6 +99,7 @@ runs:
         OUTPUT_DIRECTORY: ${{ github.workspace }}/${{ inputs.output-directory }}
       run: if test "$(grep -iIvrnE 'grep(.+(-- raw HTML omitted --|ZgotmplZ|hahahugo|\\\[i18n\\\])+)' "${OUTPUT_DIRECTORY}" | grep -iIoE '<\!-- raw HTML omitted -->|ZgotmplZ|hahahugo|\[i18n\]')" != ""; then echo "not ok"; exit 1; else echo "ok"; exit 0; fi
     - name: "Build site without audit markup"
+      if: inputs.upload-site-as
       shell: bash
       env:
         DO_MINIFY: ${{ inputs.do-minify }}
