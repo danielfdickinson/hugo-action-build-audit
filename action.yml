@@ -77,7 +77,7 @@ runs:
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       with:
-        path: ${{ github.workspace }}/{{ inputs.source-directory }}/resources
+        path: ${{ github.workspace }}/${{ inputs.source-directory }}/resources
         key: ${{ runner.os }}-hugoresources-${{ hashFiles('**/assets/**', '**.webp', '**.png', '**.jpg', '**.jpeg', '**.gif', '**.tiff', '**.tif', '**.bmp') }}
         restore-keys: |
           ${{ runner.os }}-hugoresources-
