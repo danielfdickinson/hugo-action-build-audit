@@ -95,7 +95,8 @@ runs:
     - name: "Hugo resources cache"
       uses: actions/cache@v2
       env:
-        resources-hash: ${{ hashFiles(format('{0}, {1}, {2}, {3}', format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '/**assets/**'), join(['webp', 'svg', 'png', 'jpg', 'jpeg','gif', 'tiff', 'tif', 'bmp'], format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '/**content/**.'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**/assets/**'), join(['webp', 'svg', 'png', 'jpg', 'jpeg','gif', 'tiff', 'tif', 'bmp'], format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.')))) }}
+        images-repo-content:  join(['webp', 'svg', 'png', 'jpg', 'jpeg','gif', 'tiff', 'tif', 'bmp'], format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**content/**.'))
+        resources-hash: ${{ hashFiles(format('{0}, {1}, {2}', format('{0}/{1}/{2}', inputs.code-directory, inputs.hugo-cache-directory, '/**assets/**'), format('{0}/{1}/{2}/{3}', inputs.code-directory, inputs.repo-directory, inputs.source-directory, '**/assets/**'), env.images-repo-content)) }}
       with:
         path: ${{ inputs.code-directory }}/${{ inputs.repo-directory }}/${{ inputs.source-directory }}/resources
         key: ${{ runner.os }}-hugoresources-${{ env.resources-hash }}
