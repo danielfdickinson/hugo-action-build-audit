@@ -3,13 +3,9 @@ GitHub action to checkout, build, and audit a Hugo site
 
 ## Status
 
-### Main
+ARCHIVED: This repository has been archived, renamed, and moved to <https://github.com/danielfdickinson/build-audit-action-hugo-dfd>.
 
-![test-build-audit](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit.yml/badge.svg)
-
-### Pull Request
-
-![test-build-audit PR](https://github.com/danielfdickinson/hugo-action-build-audit/actions/workflows/test-build-audit.yml/badge.svg?event=pull_request)
+This repo remains for the benefit of other (mostly archived) repos that depend on it.
 
 ## Details
 
